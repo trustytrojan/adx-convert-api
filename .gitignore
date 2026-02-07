@@ -1,0 +1,6 @@
+.env
+node_modules
+maidata.json
+song-name-to-gdrive-folder-id.json
+storage-url-cache.json
+*.zip
