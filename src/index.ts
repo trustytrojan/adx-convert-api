@@ -11,7 +11,7 @@ let storageCache: NodeJS.Dict<string> = Object.create(null);
 
 // Parse search query to handle quoted terms and whitespace-separated terms
 const parseSearchQuery = (query: string) => {
-	const terms: Array<{ text: string; exact: boolean }> = [];
+	const terms: string[] = [];
 	let remaining = query;
 
 	// Extract quoted terms first
@@ -19,15 +19,13 @@ const parseSearchQuery = (query: string) => {
 	let match: RegExpExecArray | null;
 
 	while ((match = quotedPattern.exec(query)) !== null) {
-		terms.push({ text: match[1], exact: true });
+		terms.push(match[1]);
 		remaining = remaining.replace(match[0], ' ');
 	}
 
 	// Extract remaining whitespace-separated terms
 	const plainTerms = remaining.trim().split(/\s+/).filter((t) => t.length > 0);
-	plainTerms.forEach((term) => {
-		terms.push({ text: term, exact: false });
-	});
+	terms.push(...plainTerms);
 
 	return terms;
 };
@@ -46,24 +44,15 @@ app.get('/search', (c) => {
 
 	const results: Record<string, string> = {};
 
-	for (const [songName, folderId] of Object.entries(songMapping)) {
+	for (const songName in songMapping) {
 		const lowerSongName = songName.toLowerCase();
+		const inLowerSongName = lowerSongName.includes.bind(lowerSongName);
 
 		// Check if all terms match
-		const allMatch = terms.every((term) => {
-			const lowerTerm = term.text.toLowerCase();
-
-			if (term.exact) {
-				// Exact match required (from quoted term)
-				return lowerSongName.includes(lowerTerm);
-			} else {
-				// Fuzzy match for non-quoted terms
-				return lowerSongName.includes(lowerTerm);
-			}
-		});
+		const allMatch = terms.every(inLowerSongName);
 
 		if (allMatch)
-			results[songName] = folderId;
+			results[songName] = (songMapping as Record<string, string>)[songName];
 	}
 
 	return c.json(results);

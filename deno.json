@@ -7,6 +7,13 @@
 		"hono": "npm:hono@^4.11.8",
 		"puppeteer": "npm:puppeteer@^24.37.2"
 	},
+	"lint": {
+		"rules": {
+			"exclude": [
+				"no-explicit-any"
+			]
+		}
+	},
 	"fmt": {
 		"useTabs": true,
 		"trailingCommas": "onlyMultiLine",
