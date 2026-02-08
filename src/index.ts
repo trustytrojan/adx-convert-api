@@ -132,7 +132,11 @@ process.on('SIGTERM', saveCacheAndExit);
 if (fs.existsSync(storageCacheFile))
 	storageCache = JSON.parse(fs.readFileSync(storageCacheFile).toString());
 
-const port = 3000;
+if (!process.argv[2]) {
+	throw new Error('port required');
+}
+
+const port = Number.parseInt(process.argv[2]);
 
 if ('Deno' in globalThis)
 	Deno.serve({ port }, app.fetch);
