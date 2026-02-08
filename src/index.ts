@@ -31,7 +31,7 @@ const parseSearchQuery = (query: string) => {
 };
 
 // Search through song names
-app.get('/search', (c) => {
+app.get('/adx/search', (c) => {
 	const query = c.req.query('q') || c.req.query('query');
 
 	if (!query)
@@ -59,7 +59,7 @@ app.get('/search', (c) => {
 });
 
 // Download endpoint with caching
-app.get('/download/:folderId', async (c) => {
+app.get('/adx/download/:folderId', async (c) => {
 	const folderId = c.req.param('folderId');
 	const force = c.req.query('force') !== undefined;
 
@@ -103,7 +103,7 @@ app.get('/download/:folderId', async (c) => {
 });
 
 // Health check endpoint
-app.get('/', (c) => {
+app.get('/adx', (c) => {
 	return c.json({
 		status: 'ok',
 		endpoints: {
