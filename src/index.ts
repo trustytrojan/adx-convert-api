@@ -12,7 +12,7 @@ let storageCache: NodeJS.Dict<string> = Object.create(null);
 // Parse search query to handle quoted terms and whitespace-separated terms
 const parseSearchQuery = (query: string) => {
 	const terms: string[] = [];
-	let remaining = query;
+	let remaining = query.toLowerCase();
 
 	// Extract quoted terms first
 	const quotedPattern = /"([^"]+)"/g;
