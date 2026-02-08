@@ -117,11 +117,18 @@ const storageCacheFile = 'storage-url-cache.json';
 
 // deno-lint-ignore no-explicit-any
 const saveCacheAndExit = (o: any) => {
-	fs.writeFileSync(storageCacheFile, JSON.stringify(storageCache, null, '\t'));
-	if (o instanceof Error) {
-		console.error(o);
-		process.exit(1);
+	console.log(`[saveCacheAndExit] called with:`, o);
+
+	try {
+		fs.writeFileSync(storageCacheFile, JSON.stringify(storageCache, null, '\t'));
+		console.log(`[saveCacheAndExit] storage url cache saved to: ${storageCacheFile}`);
+	} catch (err) {
+		console.error(`[saveCacheAndExit] failed to save storage url cache:`, err);
 	}
+
+	if (o instanceof Error)
+		process.exitCode = 1;
+
 	process.exit();
 };
 
@@ -132,9 +139,8 @@ process.on('SIGTERM', saveCacheAndExit);
 if (fs.existsSync(storageCacheFile))
 	storageCache = JSON.parse(fs.readFileSync(storageCacheFile).toString());
 
-if (!process.argv[2]) {
+if (!process.argv[2])
 	throw new Error('port required');
-}
 
 const port = Number.parseInt(process.argv[2]);
 
