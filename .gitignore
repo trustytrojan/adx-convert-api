@@ -6,3 +6,4 @@ storage-url-cache.json
 *.zip
 log
 pid
+converts.json
