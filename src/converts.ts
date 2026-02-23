@@ -1,5 +1,5 @@
 import fs from 'node:fs';
-import { ConvertSong } from './types.ts';
+import { Song } from './types.ts';
 
 const convertsJsonFile = 'converts.json';
 
@@ -11,4 +11,4 @@ if (!fs.existsSync(convertsJsonFile)) {
 	fs.writeFileSync(convertsJsonFile, await resp.text());
 }
 
-export default JSON.parse(fs.readFileSync(convertsJsonFile).toString()) as ConvertSong[];
+export default JSON.parse(fs.readFileSync(convertsJsonFile).toString()) as Song[];

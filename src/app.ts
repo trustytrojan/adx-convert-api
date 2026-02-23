@@ -1,12 +1,17 @@
 import { Hono } from 'hono';
 import converts from './converts.ts';
-import { ConvertSong } from './types.ts';
+import { Song } from './types.ts';
 import * as gdrive from './gdrive.ts';
+
+/**
+ * Number of songs returned by `/list` per page
+ */
+const PAGE_SIZE = 30;
 
 const app = new Hono();
 
 app.get('/adx/converts/list', (c) => {
-	const sendSongs = (songs: ConvertSong[]) => {
+	const sendSongs = (songs: Song[]) => {
 		const page = c.req.query('page');
 		if (!page)
 			return c.json(songs);
@@ -15,30 +20,30 @@ app.get('/adx/converts/list', (c) => {
 			return c.json({ message: 'page is not a number' }, 400);
 		if (pageNum < 0)
 			return c.json({ message: 'page is negative' }, 400);
-		return c.json(songs.slice(pageNum * 25, (pageNum + 1) * 25));
+		return c.json(songs.slice(pageNum * PAGE_SIZE, (pageNum + 1) * PAGE_SIZE));
 	};
 
-	const trimmed = c.req.query('search')?.trim().toLowerCase();
+	const search = c.req.query('search')?.toLowerCase();
 
-	if (!trimmed)
+	if (!search)
 		return sendSongs(converts);
 
-	const terms = trimmed.split(/\s+/).filter(Boolean);
-
-	const filtered = converts.filter((song) => {
+	const filtered = converts.filter((song: Song) => {
 		const haystack = [
 			song.title,
 			song.artist,
+			song.designer,
 			song.romanizedTitle,
 			song.romanizedArtist,
-			song.zetarakuId,
+			song.romanizedDesigner,
 			song.communityNames,
+			song.levels,
 		]
 			.filter(Boolean)
-			.join(' ')
+			.join()
 			.toLowerCase();
 
-		return terms.every((term) => haystack.includes(term));
+		return haystack.includes(search);
 	});
 
 	return sendSongs(filtered);
