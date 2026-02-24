@@ -1,4 +1,6 @@
 import { Hono } from 'hono';
+import { stream } from 'hono/streaming';
+// import { logger } from 'hono/logger';
 import converts from './converts.ts';
 import { Song } from './types.ts';
 import * as gdrive from './gdrive.ts';
@@ -9,6 +11,8 @@ import * as gdrive from './gdrive.ts';
 const PAGE_SIZE = 30;
 
 const app = new Hono();
+
+// app.use(logger());
 
 app.get('/adx/converts/list', (c) => {
 	const sendSongs = (songs: Song[]) => {
@@ -71,7 +75,14 @@ const individualFileEndpoint = (fileType: keyof typeof fileType2Name) =>
 		if (!item)
 			return c.json({ message: `could not find a ${desiredFileName} file for this song` }, 404);
 
-		return c.redirect(gdrive.getFileUrl(item.id));
+		const gdriveUrl = gdrive.getFileUrl(item.id);
+
+		if (c.req.query('proxy')) {
+			console.log(`Proxying ${fileType}`);
+			return stream(c, (stream) => fetch(gdriveUrl).then(r => stream.pipe(r.body!)));
+		}
+
+		return c.redirect(gdriveUrl);
 	});
 
 for (const fileType in fileType2Name)
