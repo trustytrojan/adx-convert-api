@@ -78,7 +78,11 @@ const individualFileEndpoint = (fileType: keyof typeof fileType2Name) =>
 		const gdriveUrl = gdrive.getFileUrl(item.id);
 
 		if (c.req.query('proxy')) {
-			console.log(`Proxying ${fileType}`);
+			// public: cloudflare is allowed to cache
+			// max-age: browser caches for 1 hour
+			// s-maxage: cloudflare caches for 1 hour
+			// stale-while-revalidate: browser can serve the stale file while fetching the clean one
+			c.header('Cache-Control', 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=600');
 			return stream(c, (stream) => fetch(gdriveUrl).then(r => stream.pipe(r.body!)));
 		}
 
