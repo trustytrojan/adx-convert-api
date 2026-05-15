@@ -54,9 +54,9 @@ app.get('/adx/converts/list', (c) => {
 });
 
 const fileType2Name = {
-	track: 'track.mp3',
+	track: ['track.mp3', 'track.ogg'],
 	chart: 'maidata.txt',
-	image: 'bg.png/bg.jpg',
+	image: ['bg.png', 'bg.jpg'],
 	video: 'pv.mp4',
 };
 
